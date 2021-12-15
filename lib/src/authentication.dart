@@ -1,3 +1,7 @@
+import 'package:fil_lan/views/home.dart';
+import 'package:fil_lan/views/menu.dart';
+import 'package:fil_lan/views/profil.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'widgets.dart';
@@ -45,26 +49,55 @@ class Authentication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+
     switch (loginState) {
       case ApplicationLoginState.loggedOut:
         return Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 200, bottom: 8),
-              child: ElevatedButton(
+            Material(
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(25.0),
+              color: Colors.white,
+              child: MaterialButton(
+                minWidth: mq.size.width / 1.2,
+                padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+                child: Text(
+                  "Logga In",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: () {
                   startLoginFlow();
                 },
-                child: const Text('Logga in'),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(top: 12, bottom: 8),
-              child: ElevatedButton(
-                onPressed: () {
-                  startLoginFlow();
-                },
-                child: const Text('Skapa konto'),
+              padding: EdgeInsets.only(top: 20),
+              child: Material(
+                elevation: 5.0,
+                borderRadius: BorderRadius.circular(25.0),
+                color: Colors.white,
+                child: MaterialButton(
+                  minWidth: mq.size.width / 1.2,
+                  padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+                  child: Text(
+                    "Skapa Konto",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 20.0,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  onPressed: () {
+                    startLoginFlow();
+                  },
+                ),
               ),
             ),
           ],
@@ -105,7 +138,7 @@ class Authentication extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 24, bottom: 8),
-              child: ElevatedButton(
+              child: StyledButton(
                 onPressed: () {
                   signOut();
                 },
@@ -187,7 +220,19 @@ class _EmailFormState extends State<EmailForm> {
                   child: TextFormField(
                     controller: _controller,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your email',
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "something@example.com",
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -203,7 +248,7 @@ class _EmailFormState extends State<EmailForm> {
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 30),
-                      child: ElevatedButton(
+                      child: StyledButton(
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
                             widget.callback(_controller.text);
@@ -253,7 +298,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const Header('Create account'),
+        const Header('Skapa konto'),
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
@@ -266,7 +311,19 @@ class _RegisterFormState extends State<RegisterForm> {
                   child: TextFormField(
                     controller: _emailController,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your email',
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "something@example.com",
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -281,7 +338,22 @@ class _RegisterFormState extends State<RegisterForm> {
                   child: TextFormField(
                     controller: _displayNameController,
                     decoration: const InputDecoration(
-                      hintText: 'First & last name',
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "Förnamn",
+                      labelText: "Namn",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -296,7 +368,19 @@ class _RegisterFormState extends State<RegisterForm> {
                   child: TextFormField(
                     controller: _passwordController,
                     decoration: const InputDecoration(
-                      hintText: 'Password',
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "password",
+                      labelText: "Password",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -364,6 +448,74 @@ class _PasswordFormState extends State<PasswordForm> {
     _emailController.text = widget.email;
   }
 
+  void showAlertDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          TextEditingController _emailControllerField = TextEditingController();
+          return AlertDialog(
+            content: Container(
+              width: MediaQuery.of(context).size.width / 1.2,
+              height: MediaQuery.of(context).size.height / 4.5,
+              color: Colors.white,
+              child: Column(
+                children: <Widget>[
+                  Text("Insert Reset Email:"),
+                  TextField(
+                    controller: _emailControllerField,
+                    decoration: InputDecoration(
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                      hintText: "something@example.com",
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(15),
+                    child: Material(
+                      elevation: 5.0,
+                      borderRadius: BorderRadius.circular(25.0),
+                      color: Color(0xff8c52ff),
+                      child: MaterialButton(
+                        padding: EdgeInsets.fromLTRB(10.0, 15.0, 10.0, 15.0),
+                        child: Text(
+                          "Send Reset Email",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20.0,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        onPressed: () async {
+                          try {
+                            FirebaseAuth.instance.sendPasswordResetEmail(
+                                email: _emailControllerField.text);
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            print(e);
+                            // TODO: Add snackbar reporting error
+                          }
+                        },
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -381,7 +533,19 @@ class _PasswordFormState extends State<PasswordForm> {
                   child: TextFormField(
                     controller: _emailController,
                     decoration: const InputDecoration(
-                      hintText: 'Enter your email',
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "something@example.com",
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -396,7 +560,19 @@ class _PasswordFormState extends State<PasswordForm> {
                   child: TextFormField(
                     controller: _passwordController,
                     decoration: const InputDecoration(
-                      hintText: 'Password',
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      hintText: "password",
+                      labelText: "Password",
+                      labelStyle: TextStyle(
+                        color: Colors.white,
+                      ),
+                      hintStyle: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                     obscureText: true,
                     validator: (value) {
@@ -406,6 +582,22 @@ class _PasswordFormState extends State<PasswordForm> {
                       return null;
                     },
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: <Widget>[
+                    MaterialButton(
+                        child: Text(
+                          "Forgot Password",
+                          style: Theme.of(context)
+                              .textTheme
+                              .caption
+                              ?.copyWith(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          showAlertDialog(context);
+                        }),
+                  ],
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -419,6 +611,12 @@ class _PasswordFormState extends State<PasswordForm> {
                             widget.login(
                               _emailController.text,
                               _passwordController.text,
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MenuScreen(),
+                              ),
                             );
                           }
                         },
