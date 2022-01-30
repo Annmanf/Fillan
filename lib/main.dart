@@ -1,477 +1,117 @@
-import 'dart:async';
+import 'package:fil_lan/logic/table_bloc.dart';
+import 'package:fil_lan/service/seat_firebase.dart';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fil_lan/opening.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:fil_lan/screens/start/login_screen.dart';
+import 'package:fil_lan/screens/start/opening_screen.dart';
+import 'package:fil_lan/screens/start/register_screen.dart';
+import 'package:fil_lan/screens/wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:provider/provider.dart';
+import 'service/auth_services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'src/authentication.dart';
-import 'src/widgets.dart';
-
-void main() {
-  runApp(
-    ChangeNotifierProvider(
-      create: (context) => LoginView(),
-      builder: (context, _) => App(),
-    ),
-  );
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
-class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'FIL-LAN',
-      theme: ThemeData(
-        buttonTheme: Theme.of(context).buttonTheme.copyWith(
-              highlightColor: Colors.deepPurple,
-            ),
-        primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: const OpeningPage(),
-    );
-  }
-}
+    Color back = Color(0xff212021);
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+    Color orange = Color(0xffFBBB78);
+    Color blue = Color(0xff1ca3ae);
+    Color pink = Color(0xfff8a29f);
+    Color error = Color(0xffFF4566);
+    Color text = Color(0xff595959);
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Firebase Meetup'),
-      ),
-      body: ListView(
-        children: <Widget>[
-          const SizedBox(height: 8),
-          const IconAndDetail(Icons.calendar_today, 'October 30'),
-          const IconAndDetail(Icons.location_city, 'San Francisco'),
-          Consumer<LoginView>(
-            builder: (context, appState, _) => Authentication(
-              email: appState.email,
-              loginState: appState.loginState,
-              startLoginFlow: appState.startLoginFlow,
-              verifyEmail: appState.verifyEmail,
-              signInWithEmailAndPassword: appState.signInWithEmailAndPassword,
-              cancelRegistration: appState.cancelRegistration,
-              registerAccount: appState.registerAccount,
-              signOut: appState.signOut,
-            ),
-          ),
-          const Divider(
-            height: 8,
-            thickness: 1,
-            indent: 8,
-            endIndent: 8,
-            color: Colors.grey,
-          ),
-          const Header("What we'll be doing"),
-          const Paragraph(
-            'Join us for a day full of Firebase Workshops and Pizza!',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LoginView extends ChangeNotifier {
-  LoginView() {
-    init();
-  }
-
-  Future<void> init() async {
-    await Firebase.initializeApp();
-
-    FirebaseAuth.instance.userChanges().listen((user) {
-      if (user != null) {
-        _loginState = ApplicationLoginState.loggedIn;
-      } else {
-        _loginState = ApplicationLoginState.loggedOut;
-      }
-      notifyListeners();
-    });
-  }
-
-  ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
-  ApplicationLoginState get loginState => _loginState;
-
-  String? _email;
-  String? get email => _email;
-
-  void startLoginFlow() {
-    _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
-  }
-
-  void verifyEmail(
-    String email,
-    void Function(FirebaseAuthException e) errorCallback,
-  ) async {
-    try {
-      var methods =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      if (methods.contains('password')) {
-        _loginState = ApplicationLoginState.password;
-      } else {
-        _loginState = ApplicationLoginState.register;
-      }
-      _email = email;
-      notifyListeners();
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  void signInWithEmailAndPassword(
-    String email,
-    String password,
-    void Function(FirebaseAuthException e) errorCallback,
-  ) async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  void cancelRegistration() {
-    _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
-  }
-
-  void registerAccount(String email, String displayName, String password,
-      void Function(FirebaseAuthException e) errorCallback) async {
-    try {
-      var credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user!.updateDisplayName(displayName);
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  void signOut() {
-    FirebaseAuth.instance.signOut();
-  }
-}
-
-class ApplicationState extends ChangeNotifier {
-  ApplicationState() {
-    init();
-  }
-
-  Future<void> init() async {
-    await Firebase.initializeApp();
-
-    // Add from here
-    FirebaseFirestore.instance
-        .collection('attendees')
-        .where('attending', isEqualTo: true)
-        .snapshots()
-        .listen((snapshot) {
-      _attendees = snapshot.docs.length;
-      notifyListeners();
-    });
-    // To here
-
-    FirebaseAuth.instance.userChanges().listen((user) {
-      if (user != null) {
-        _loginState = ApplicationLoginState.loggedIn;
-        _guestBookSubscription = FirebaseFirestore.instance
-            .collection('guestbook')
-            .orderBy('timestamp', descending: true)
-            .snapshots()
-            .listen((snapshot) {
-          _guestBookMessages = [];
-          for (final document in snapshot.docs) {
-            _guestBookMessages.add(
-              GuestBookMessage(
-                name: document.data()['name'] as String,
-                message: document.data()['text'] as String,
-              ),
-            );
-          }
-          notifyListeners();
-        });
-        // Add from here
-        _attendingSubscription = FirebaseFirestore.instance
-            .collection('attendees')
-            .doc(user.uid)
-            .snapshots()
-            .listen((snapshot) {
-          if (snapshot.data() != null) {
-            if (snapshot.data()!['attending'] as bool) {
-              _attending = Attending.yes;
-            } else {
-              _attending = Attending.no;
-            }
-          } else {
-            _attending = Attending.unknown;
-          }
-          notifyListeners();
-        });
-        // to here
-      } else {
-        _loginState = ApplicationLoginState.loggedOut;
-        _guestBookMessages = [];
-        _guestBookSubscription?.cancel();
-        _attendingSubscription?.cancel(); // new
-      }
-      notifyListeners();
-    });
-  }
-
-  ApplicationLoginState _loginState = ApplicationLoginState.loggedOut;
-  ApplicationLoginState get loginState => _loginState;
-
-  String? _email;
-  String? get email => _email;
-
-  StreamSubscription<QuerySnapshot>? _guestBookSubscription;
-  List<GuestBookMessage> _guestBookMessages = [];
-  List<GuestBookMessage> get guestBookMessages => _guestBookMessages;
-
-  int _attendees = 0;
-  int get attendees => _attendees;
-
-  Attending _attending = Attending.unknown;
-  StreamSubscription<DocumentSnapshot>? _attendingSubscription;
-  Attending get attending => _attending;
-  set attending(Attending attending) {
-    final userDoc = FirebaseFirestore.instance
-        .collection('attendees')
-        .doc(FirebaseAuth.instance.currentUser!.uid);
-    if (attending == Attending.yes) {
-      userDoc.set(<String, dynamic>{'attending': true});
-    } else {
-      userDoc.set(<String, dynamic>{'attending': false});
-    }
-  }
-
-  void startLoginFlow() {
-    _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
-  }
-
-  Future<void> verifyEmail(
-    String email,
-    void Function(FirebaseAuthException e) errorCallback,
-  ) async {
-    try {
-      var methods =
-          await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-      if (methods.contains('password')) {
-        _loginState = ApplicationLoginState.password;
-      } else {
-        _loginState = ApplicationLoginState.register;
-      }
-      _email = email;
-      notifyListeners();
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  Future<void> signInWithEmailAndPassword(
-    String email,
-    String password,
-    void Function(FirebaseAuthException e) errorCallback,
-  ) async {
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  void cancelRegistration() {
-    _loginState = ApplicationLoginState.emailAddress;
-    notifyListeners();
-  }
-
-  Future<void> registerAccount(
-      String email,
-      String displayName,
-      String password,
-      void Function(FirebaseAuthException e) errorCallback) async {
-    try {
-      var credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-      await credential.user!.updateDisplayName(displayName);
-    } on FirebaseAuthException catch (e) {
-      errorCallback(e);
-    }
-  }
-
-  void signOut() {
-    FirebaseAuth.instance.signOut();
-  }
-
-  Future<DocumentReference> addMessageToGuestBook(String message) {
-    if (_loginState != ApplicationLoginState.loggedIn) {
-      throw Exception('Must be logged in');
-    }
-
-    return FirebaseFirestore.instance
-        .collection('guestbook')
-        .add(<String, dynamic>{
-      'text': message,
-      'timestamp': DateTime.now().millisecondsSinceEpoch,
-      'name': FirebaseAuth.instance.currentUser!.displayName,
-      'userId': FirebaseAuth.instance.currentUser!.uid,
-    });
-  }
-}
-
-class GuestBookMessage {
-  GuestBookMessage({required this.name, required this.message});
-  final String name;
-  final String message;
-}
-
-enum Attending { yes, no, unknown }
-
-class GuestBook extends StatefulWidget {
-  const GuestBook({required this.addMessage, required this.messages});
-  final FutureOr<void> Function(String message) addMessage;
-  final List<GuestBookMessage> messages;
-
-  @override
-  _GuestBookState createState() => _GuestBookState();
-}
-
-class _GuestBookState extends State<GuestBook> {
-  final _formKey = GlobalKey<FormState>(debugLabel: '_GuestBookState');
-  final _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Form(
-            key: _formKey,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: 'Leave a message',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Enter your message to continue';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                StyledButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      await widget.addMessage(_controller.text);
-                      _controller.clear();
-                    }
-                  },
-                  child: Row(
-                    children: const [
-                      Icon(Icons.send),
-                      SizedBox(width: 4),
-                      Text('SEND'),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(),
         ),
-        const SizedBox(height: 8),
-        for (var message in widget.messages)
-          Paragraph('${message.name}: ${message.message}'),
-        const SizedBox(height: 8),
+        Provider<SeatFire>(
+          create: (_) => SeatFire(),
+        ),
+        BlocProvider<TableBloc>(create: (context) => TableBloc())
       ],
+      child: Builder(builder: (BuildContext context) {
+        return MaterialApp(
+          theme: ThemeData(
+            scaffoldBackgroundColor: orange,
+            primarySwatch: createMaterialColor(pink),
+            primaryColor: pink,
+            colorScheme: ColorScheme(
+                primary: pink,
+                primaryVariant: pink,
+                secondary: orange,
+                secondaryVariant: orange,
+                surface: blue,
+                background: back,
+                error: error,
+                onPrimary: text,
+                onSecondary: text,
+                onSurface: text,
+                onBackground: Colors.white,
+                onError: Colors.white,
+                brightness: Brightness.dark),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(),
+            ),
+            dialogTheme: DialogTheme(
+              backgroundColor: blue,
+              titleTextStyle: GoogleFonts.lato(
+                textStyle: TextStyle(
+                  color: text,
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            textTheme: TextTheme(
+              bodyText2: TextStyle(
+                color: text,
+              ),
+            ),
+          ),
+          title: "APP",
+          initialRoute: '/',
+          routes: {
+            '/': (context) => const Wrapper(),
+            '/login-screen': (context) => LoginScreen(),
+            '/register-screen': (context) => RegisterScreen(),
+            '/opening-screen': (context) => OpeningScreen(),
+          },
+        );
+//Here to use rootContext is safe
+//Provider.of<SomeModel>(rootContext, listen: false);
+      }),
     );
   }
 }
 
-class YesNoSelection extends StatelessWidget {
-  const YesNoSelection({required this.state, required this.onSelection});
-  final Attending state;
-  final void Function(Attending selection) onSelection;
+MaterialColor createMaterialColor(Color color) {
+  List strengths = <double>[.05];
+  final swatch = <int, Color>{};
+  final int r = color.red, g = color.green, b = color.blue;
 
-  @override
-  Widget build(BuildContext context) {
-    switch (state) {
-      case Attending.yes:
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(elevation: 0),
-                onPressed: () => onSelection(Attending.yes),
-                child: const Text('YES'),
-              ),
-              const SizedBox(width: 8),
-              TextButton(
-                onPressed: () => onSelection(Attending.no),
-                child: const Text('NO'),
-              ),
-            ],
-          ),
-        );
-      case Attending.no:
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              TextButton(
-                onPressed: () => onSelection(Attending.yes),
-                child: const Text('YES'),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(elevation: 0),
-                onPressed: () => onSelection(Attending.no),
-                child: const Text('NO'),
-              ),
-            ],
-          ),
-        );
-      default:
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              StyledButton(
-                onPressed: () => onSelection(Attending.yes),
-                child: const Text('YES'),
-              ),
-              const SizedBox(width: 8),
-              StyledButton(
-                onPressed: () => onSelection(Attending.no),
-                child: const Text('NO'),
-              ),
-            ],
-          ),
-        );
-    }
+  for (int i = 1; i < 10; i++) {
+    strengths.add(0.1 * i);
   }
+  for (var strength in strengths) {
+    final double ds = 0.5 - strength;
+    swatch[(strength * 1000).round()] = Color.fromRGBO(
+      r + ((ds < 0 ? r : (255 - r)) * ds).round(),
+      g + ((ds < 0 ? g : (255 - g)) * ds).round(),
+      b + ((ds < 0 ? b : (255 - b)) * ds).round(),
+      1,
+    );
+  }
+  return MaterialColor(color.value, swatch);
 }
