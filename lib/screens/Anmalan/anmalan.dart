@@ -1,3 +1,4 @@
+import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 import 'package:fil_lan/models/tables.dart';
 import 'package:fil_lan/screens/Anmalan/checkbox_state.dart';
@@ -262,6 +263,7 @@ class _AnmalanState extends State<Anmalan> {
                               fieldValues['gdpr']!,
                               fieldValues['regler']!,
                               '${tableBloc.state.selectedSeats[0]} ');
+
                           Navigator.popUntil(context,
                               ModalRoute.withName(Navigator.defaultRouteName));
                         }

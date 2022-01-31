@@ -1,13 +1,30 @@
+import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
+import 'package:fil_lan/service/auth_services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_countdown_timer/index.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
   const HomeScreen({Key? key}) : super(key: key);
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool anmald = false;
+  @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
+
+    setState(() {
+      anmald = authService.isAnmald();
+      print('anmald? $anmald');
+    });
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(36, 60, 36, 20),
       child: Column(
@@ -40,23 +57,35 @@ class HomeScreen extends StatelessWidget {
                   DateTime.parse("2022-03-28 23:59:59Z").millisecondsSinceEpoch,
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(70, 100, 70, 0),
-            child: TextButton(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Anmäl dig',
-                      style: Theme.of(context).textTheme.headline2,
-                      textAlign: TextAlign.center,
+          anmald
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(70, 100, 70, 0),
+                  child: Text('Du är anmäld'),
+                )
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(70, 100, 70, 0),
+                  child: TextButton(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Anmäl dig',
+                          style: Theme.of(context).textTheme.headline2,
+                          textAlign: TextAlign.center,
+                        ),
+                        Icon(Icons.arrow_forward_ios),
+                      ],
                     ),
-                    Icon(Icons.arrow_forward_ios),
-                  ],
+                    onPressed: () {
+                      setState(() {
+                        anmald = authService.isAnmald();
+                      });
+                      anmald
+                          ? print('anmäld')
+                          : Navigator.of(context).pushNamed('/anmalan_screen');
+                    },
+                  ),
                 ),
-                onPressed: () =>
-                    Navigator.of(context).pushNamed('/anmalan_screen')),
-          ),
         ],
       ),
     );

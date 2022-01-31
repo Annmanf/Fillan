@@ -1,3 +1,4 @@
+import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 import 'package:fil_lan/service/seat_firebase.dart';
 

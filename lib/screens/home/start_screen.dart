@@ -1,6 +1,8 @@
+import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 import 'package:fil_lan/screens/Anmalan/anmalan.dart';
 import 'package:fil_lan/screens/Anmalan/book_table.dart';
+import 'package:fil_lan/service/auth_services.dart';
 import 'package:fil_lan/service/seat_firebase.dart';
 import 'package:fil_lan/screens/home/bottom_nav_screen.dart';
 import 'package:fil_lan/screens/home/home_screen.dart';
@@ -26,6 +28,7 @@ class _StartScreenState extends State<StartScreen> {
   @override
   Widget build(BuildContext context) {
     SeatFire seatService = Provider.of<SeatFire>(context, listen: false);
+    final authService = Provider.of<AuthService>(context);
 
     Future.delayed(const Duration(seconds: 1), () async {
       // await for the Firebase initialization to occur
@@ -33,6 +36,7 @@ class _StartScreenState extends State<StartScreen> {
       seatService.getSeatsFromFirebas((e) {}).then((value) {
         seats = seatService.getTables();
       });
+      authService.getData();
     });
     Color back = Color(0xff212021);
 

@@ -4,7 +4,21 @@ import 'package:flutter/material.dart';
 class User {
   final String uid;
   final String? email;
-  User(this.uid, this.email);
+  final String? username;
+  final String? phonenumber;
+  User(
+      {required this.uid,
+      required this.email,
+      this.username,
+      this.phonenumber});
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+        uid: json['uid'],
+        email: json['email'],
+        username: json['Förnamn'],
+        phonenumber: json['phonenumber']);
+  }
 }
 
 class GetUserName extends StatelessWidget {

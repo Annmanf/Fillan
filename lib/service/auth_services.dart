@@ -6,11 +6,34 @@ class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  User? _user;
+
+  User? getUsers() {
+    return _user;
+  }
+
   User? _userFromFirebase(auth.User? user) {
     if (user == null) {
       return null;
     }
-    return User(user.uid, user.email);
+    return User(uid: user.uid, email: user.email);
+  }
+
+  dynamic nested = false;
+
+  bool isAnmald() {
+    _firestore.collection('users').doc(uid).get().then((value) {
+      try {
+        nested = value.get(FieldPath(['anmäld']));
+        print('bool $nested');
+        return nested;
+      } on StateError catch (e) {
+        print('No nested field exists!');
+        return false;
+      }
+    });
+    return nested;
+    //return false;
   }
 
   final Stream<QuerySnapshot> _usersStream =
@@ -26,22 +49,39 @@ class AuthService {
 
   User get usr {
     return User(
-        _firebaseAuth.currentUser!.uid, _firebaseAuth.currentUser!.email);
+        uid: _firebaseAuth.currentUser!.uid,
+        email: _firebaseAuth.currentUser!.email);
   }
 
   String? get uid {
     return _firebaseAuth.currentUser!.uid;
   }
 
-  getData() async {
+  Future<void> getData() async {
+    CollectionReference seatsfromfire = _firestore.collection('users');
     try {
-      var snap = await _firestore
-          .collection("users")
-          .doc(_firebaseAuth.currentUser!.uid)
-          .get();
-      return snap.data();
-    } catch (e) {
-      return e.toString();
+      seatsfromfire.snapshots().forEach((element) async {
+        DocumentSnapshot snapshot = await seatsfromfire
+            .doc(uid)
+            .get()
+            .catchError((onError) => print('failed'));
+        print(snapshot.data());
+        if (snapshot.exists) {
+          //print(snapshot);
+          Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+
+          User usr = User.fromJson(data);
+          print(usr.email);
+          if (usr.uid == _firebaseAuth.currentUser!.uid) {
+            _user = usr;
+            print(_user!.email);
+          }
+        } else {
+          print('nopoe');
+        }
+      });
+    } on FirebaseException catch (e) {
+      print(e.toString());
     }
   }
 
@@ -258,6 +298,38 @@ class AuthService {
     }
   }
 
+  bool? get status {
+    _firestore.collection('users').doc(uid).get().then((value) {
+      try {
+        value.get(FieldPath(['status']));
+        print('statusfromfire $nested');
+        return value.get(FieldPath(['status']));
+      } on StateError catch (e) {
+        print('No nested field exists!');
+        return false;
+      }
+    });
+    return false;
+    //return false;
+  }
+
+  Future<void> setStatus(bool hh) async {
+    try {
+      _firestore
+          .collection('users')
+          .doc(uid)
+          .update(
+            {
+              'status': hh,
+            },
+          )
+          .then((value) => print('status updated'))
+          .catchError((error) => print("Failed to update status: $error"));
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+  }
+
   Future<void> addAnmalan(
     String spel,
     String mat,
@@ -286,6 +358,7 @@ class AuthService {
                 'gdpr': gdpr,
                 'regler': regler,
                 'sittplats': sittplats,
+                'anmäld': true,
               },
             )
             .then((value) => print('added'))

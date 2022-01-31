@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fil_lan/models/users.dart';
 import 'package:fil_lan/service/auth_services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String? username = '';
@@ -25,7 +27,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         FirebaseFirestore.instance.collection('users').snapshots();
     String? email = authService.email;
 
-    var userData = authService.getData();
+    User? userData = authService.getUsers();
+    print(userData?.email);
+
+    Future.delayed(const Duration(seconds: 1), () async {
+      // await for the Firebase initialization to occur
+    });
 
     return CustomScrollView(
       slivers: [
@@ -40,13 +47,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   width: 12,
                 ),
-                CircleAvatar(
-                  backgroundColor: Color(0x0000F000),
+                QrImage(
+                  data: "this is a simple qr code",
+                  version: QrVersions.auto,
+                  size: 100.0,
+                  embeddedImage: AssetImage('assets/milk-box.png'),
                 ),
                 SizedBox(
                   width: 12,
                 ),
-                Text('Username'),
+                Text(userData?.username ?? 'username'),
               ],
             ),
           ),
@@ -72,10 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     title: Text(isSwitched ? status[0] : status[1]),
                     trailing: Switch(
                       value: isSwitched,
-                      onChanged: (value) {
-                        setState(() {
-                          isSwitched = value;
-                          print(isSwitched);
+                      onChanged: (value) async {
+                        await authService.setStatus(value).then((val) {
+                          setState(() {
+                            isSwitched = value;
+                            print('isSwitched $isSwitched');
+                          });
                         });
                       },
                       activeTrackColor: Theme.of(context).colorScheme.secondary,
@@ -91,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.email,
-                  title: email ?? 'email',
+                  title: userData?.email ?? 'email',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 _userHeightTile(
@@ -99,7 +111,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.person,
-                  title: "ef",
+                  title: userData?.username ?? 'username',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 _userHeightTile(
@@ -107,7 +119,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.phone,
-                  title: "gg",
+                  title: userData?.phonenumber ?? 'phonenumber',
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                _userHeightTile(
+                  height: 10,
+                ),
+                _userListTile(
+                  licon: Icons.phone,
+                  title: userData?.phonenumber ?? 'phonenumber',
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                _userHeightTile(
+                  height: 10,
+                ),
+                _userListTile(
+                  licon: Icons.phone,
+                  title: userData?.phonenumber ?? 'phonenumber',
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                _userHeightTile(
+                  height: 10,
+                ),
+                _userListTile(
+                  licon: Icons.phone,
+                  title: userData?.phonenumber ?? 'phonenumber',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 ElevatedButton(
