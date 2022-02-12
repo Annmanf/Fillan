@@ -44,6 +44,8 @@ dependencies:
   scroll_snap_list: ^0.8.4
   rubber: ^1.0.1
   qr_flutter: ^4.0.0
+  url_launcher: ^6.0.18
+  flutter_swish_payment: ^0.0.1
   
 
 dev_dependencies:
@@ -73,6 +75,8 @@ flutter:
     - assets/sol.jpg
     - assets/milk-box.png
     - assets/FIL-LAN22.png
+    - assets/cert/Swish_Merchant_TestCertificate_1234679304.key
+    - assets/cert/Swish_Merchant_TestSigningCertificate_1234679304.pem
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

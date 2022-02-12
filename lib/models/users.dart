@@ -6,18 +6,27 @@ class User {
   final String? email;
   final String? username;
   final String? phonenumber;
+  final String? lastname;
+  final String? adress;
+  final String? birthday;
   User(
       {required this.uid,
       required this.email,
       this.username,
-      this.phonenumber});
+      this.phonenumber,
+      this.lastname,
+      this.adress,
+      this.birthday});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         uid: json['uid'],
         email: json['email'],
         username: json['Förnamn'],
-        phonenumber: json['phonenumber']);
+        phonenumber: json['phonenumber'],
+        lastname: json['Efternamn'],
+        adress: json['adress'],
+        birthday: json['Födelsedatum']);
   }
 }
 

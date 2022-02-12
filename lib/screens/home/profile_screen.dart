@@ -33,10 +33,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     Future.delayed(const Duration(seconds: 1), () async {
       // await for the Firebase initialization to occur
     });
+    String firstandLastName = (userData?.username ?? 'username') +
+        ' ' +
+        (userData?.lastname ?? 'lastname');
 
     return CustomScrollView(
       slivers: [
         SliverAppBar(
+          backgroundColor: Theme.of(context).colorScheme.background,
           pinned: true,
           stretch: true,
           expandedHeight: 250,
@@ -52,11 +56,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   version: QrVersions.auto,
                   size: 100.0,
                   embeddedImage: AssetImage('assets/milk-box.png'),
+                  foregroundColor: Theme.of(context).colorScheme.surface,
                 ),
                 SizedBox(
                   width: 12,
                 ),
-                Text(userData?.username ?? 'username'),
+                Text(
+                  firstandLastName,
+                  style: TextStyle(color: Colors.white),
+                ),
               ],
             ),
           ),
@@ -119,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.phone,
-                  title: userData?.phonenumber ?? 'phonenumber',
+                  title: userData?.lastname ?? 'lastname',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 _userHeightTile(
@@ -135,7 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.phone,
-                  title: userData?.phonenumber ?? 'phonenumber',
+                  title: userData?.adress ?? 'adress',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 _userHeightTile(
@@ -143,7 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _userListTile(
                   licon: Icons.phone,
-                  title: userData?.phonenumber ?? 'phonenumber',
+                  title: userData?.birthday ?? 'birthday',
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 ElevatedButton(
@@ -153,8 +161,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text('Delete User'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    authService.signOut();
+                  onPressed: () async {
+                    await authService.signOut();
                     print('signed out');
                   },
                   child: Text('Logga ut'),

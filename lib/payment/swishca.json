@@ -1,0 +1,17 @@
+{
+    "payload": {
+      "payoutInstructionUUID": "E4D773858AF5459B96ABCA4B9DBFF94D",
+      "payerPaymentReference": "payerRef",
+      "payerAlias": "1231388446",
+      "payeeAlias": "46711111132",
+      "payeeSSN": "197709306828",
+      "amount": "100.00",
+      "currency": "SEK",
+      "payoutType": "PAYOUT",
+      "message": "Message to the recipient.",
+      "instructionDate": "2019-05-05T12:23:23Z",
+      "signingCertificateSerialNumber": "7BE0DA9DE336EDCE5FE9AAFEF39248AE"
+    },
+    "callbackUrl": "https://not.a.real.caller.com/callback",
+    "signature": "a89xIJY8TBwWzKuTh4Qvx6hrUoMDI3/2RooINGmPUNAM0fzfvUFn9RFcvm4z2WsLuY8xO0F9aioK0MvG2FiYIeDEZjpgAlWyFxJl3R9dvN2lDFo8MMaseQfOK6IuDyIgrRVyTSrdyKKBGXRcoihX5CN7xQY7zBgl8AtIz9lOQ0o="
+   }

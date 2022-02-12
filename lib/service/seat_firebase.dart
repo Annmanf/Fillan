@@ -25,18 +25,16 @@ class SeatFire {
     try {
       seatsfromfire.snapshots().forEach((element) async {
         for (var item in element.docs) {
-          print(item.id);
           DocumentSnapshot snapshot = await seatsfromfire
               .doc(item.id)
               .get()
               .catchError((onError) => print('failed'));
-          print(snapshot.data());
+
           if (snapshot.exists) {
-            //print(snapshot);
             Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
             Tables table = Tables.fromJson(data);
-            print(table.end);
+
             if (_tables.contains(table)) {
               print('already fetched');
             } else {

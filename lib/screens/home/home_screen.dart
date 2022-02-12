@@ -22,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       anmald = authService.isAnmald();
-      print('anmald? $anmald');
     });
 
     return Padding(
@@ -81,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         anmald = authService.isAnmald();
                       });
                       anmald
-                          ? print('anmäld')
+                          ? anmald
                           : Navigator.of(context).pushNamed('/anmalan_screen');
                     },
                   ),

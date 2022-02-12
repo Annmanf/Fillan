@@ -25,7 +25,7 @@ class AuthService {
     _firestore.collection('users').doc(uid).get().then((value) {
       try {
         nested = value.get(FieldPath(['anmäld']));
-        print('bool $nested');
+
         return nested;
       } on StateError catch (e) {
         print('No nested field exists!');
@@ -65,16 +65,14 @@ class AuthService {
             .doc(uid)
             .get()
             .catchError((onError) => print('failed'));
-        print(snapshot.data());
+
         if (snapshot.exists) {
-          //print(snapshot);
           Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
 
           User usr = User.fromJson(data);
-          print(usr.email);
+
           if (usr.uid == _firebaseAuth.currentUser!.uid) {
             _user = usr;
-            print(_user!.email);
           }
         } else {
           print('nopoe');

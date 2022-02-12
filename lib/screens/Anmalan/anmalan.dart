@@ -231,25 +231,18 @@ class _AnmalanState extends State<Anmalan> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           String res = tableBloc.getSelectedSeat();
-                          print(res);
+
                           String b = res.substring(0, 1);
                           int h = int.parse(res.substring(0, 1));
 
                           int l = int.parse(res.substring(1, 2));
                           //List<Tables> seat = globals.seats as List<Tables>;
-                          print(b);
-                          print(h);
-                          print(l);
 
                           List<Tables> seat = [];
                           for (var item in widget.seats) {
                             seat.add(item);
                           }
                           seat[h - 1].freeSeats.remove(l);
-
-                          //seats[h].freeSeats.remove(l);
-                          print(widget.seats[h - 1]);
-                          print(seat[h - 1].freeSeats);
 
                           List<dynamic> newFree = seat[h - 1].freeSeats;
                           seatService.chooseSeat(b, newFree);
@@ -395,7 +388,7 @@ class _CheckboxFormFieldState extends State<CheckboxFormField> {
     });
 
     // Printing all selected items on Terminal screen.
-    print(holder_1);
+    print('holder_1 $holder_1');
     // Here you will get all your selected Checkbox items.
 
     // Clear array after use.

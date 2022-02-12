@@ -1,5 +1,6 @@
 import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
+import 'package:fil_lan/payment/swishtest.dart';
 import 'package:fil_lan/service/seat_firebase.dart';
 
 import 'package:fil_lan/screens/start/login_screen.dart';
@@ -17,7 +18,7 @@ import 'package:google_fonts/google_fonts.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(SwishDemoApp());
 }
 
 class MyApp extends StatelessWidget {
