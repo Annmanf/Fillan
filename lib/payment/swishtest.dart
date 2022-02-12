@@ -10,7 +10,7 @@ class SwishDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Data Example',
+      title: 'Fil_lan example swish',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
