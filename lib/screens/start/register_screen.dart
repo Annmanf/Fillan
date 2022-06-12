@@ -36,7 +36,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final authService = Provider.of<AuthService>(context);
     final mq = MediaQuery.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Form(
           key: _formKey,

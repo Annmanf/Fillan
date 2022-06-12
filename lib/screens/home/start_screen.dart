@@ -1,13 +1,12 @@
-import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 import 'package:fil_lan/screens/Anmalan/anmalan.dart';
-import 'package:fil_lan/screens/Anmalan/book_table.dart';
 import 'package:fil_lan/service/auth_services.dart';
-import 'package:fil_lan/service/seat_firebase.dart';
 import 'package:fil_lan/screens/home/bottom_nav_screen.dart';
 import 'package:fil_lan/screens/home/home_screen.dart';
 import 'package:fil_lan/screens/home/profile_screen.dart';
 import 'package:fil_lan/screens/home/studio_screen.dart';
+import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,16 +26,31 @@ class _StartScreenState extends State<StartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SeatFire seatService = Provider.of<SeatFire>(context, listen: false);
     final authService = Provider.of<AuthService>(context);
 
     Future.delayed(const Duration(seconds: 1), () async {
       // await for the Firebase initialization to occur
+      /* await seatService.addTablesInFirebase(
+          9,
+          [
+            {0: 1},
+            {1: 2},
+            {2: 3},
+            {3: 4},
+            {4: 5}
+          ],
+          9);*/
+      /*
+      await seatService.getSeatsFromFirebas((e) {}).then((value) {
+        setState(() {
+          seats = seatService.getTables();
+        });
 
-      seatService.getSeatsFromFirebas((e) {}).then((value) {
-        seats = seatService.getTables();
-      });
+        //print('fetched tables');
+      });*/
+
       authService.getData();
+      //authService.getSelectedSeats();
     });
     Color back = Color(0xff212021);
 
@@ -46,60 +60,7 @@ class _StartScreenState extends State<StartScreen> {
     Color error = Color(0xffFF4566);
     Color text = Color(0xff595959);
     return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: back,
-        primarySwatch: createMaterialColor(pink),
-        primaryColor: pink,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            backgroundColor: back,
-            selectedLabelStyle: TextStyle(
-              color: pink,
-            )),
-        textButtonTheme: TextButtonThemeData(
-          style: ButtonStyle(),
-        ),
-        colorScheme: ColorScheme(
-            primary: pink,
-            primaryVariant: pink,
-            secondary: orange,
-            secondaryVariant: orange,
-            surface: blue,
-            background: back,
-            error: error,
-            onPrimary: text,
-            onSecondary: text,
-            onSurface: text,
-            onBackground: Colors.white,
-            onError: Colors.white,
-            brightness: Brightness.dark),
-        dialogTheme: DialogTheme(
-          backgroundColor: blue,
-          titleTextStyle: GoogleFonts.lato(
-            textStyle: TextStyle(
-              color: text,
-              fontSize: 20,
-            ),
-          ),
-        ),
-        textTheme: TextTheme(
-          headline1: GoogleFonts.lato(
-            textStyle: TextStyle(
-              color: text,
-              fontSize: 40,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          headline2: GoogleFonts.lato(
-            textStyle: TextStyle(
-              color: text,
-              fontSize: 30,
-            ),
-          ),
-          bodyText2: TextStyle(
-            color: text,
-          ),
-        ),
-      ),
+      theme: Fil_LanTheme.fil_lanTheme,
       routes: {
         '/': (ctx) => BlocProvider.value(
               value: _blocSeater,
@@ -107,7 +68,7 @@ class _StartScreenState extends State<StartScreen> {
             ),
         '/home_screen': (ctx) => BlocProvider.value(
               value: _blocSeater,
-              child: const HomeScreen(),
+              child: HomeScreen(),
             ),
         '/profile_screen': (ctx) => BlocProvider.value(
               value: _blocSeater,
@@ -120,10 +81,6 @@ class _StartScreenState extends State<StartScreen> {
         '/anmalan_screen': (ctx) => BlocProvider.value(
               value: _blocSeater,
               child: Anmalan(seats: seats),
-            ),
-        '/book_screen': (ctx) => BlocProvider.value(
-              value: _blocSeater,
-              child: BookTable(seats: seats),
             ),
       },
     );

@@ -18,8 +18,7 @@ class Wrapper extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.active) {
           User? user = snapshot.data;
           final bool isLoggedin = snapshot.hasData;
-          print(isLoggedin);
-
+          print("logged in? $isLoggedin");
           return isLoggedin ? StartScreen() : OpeningScreen();
         } else {
           return const Scaffold(

@@ -1,3 +1,4 @@
+import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:flutter/material.dart';
 
 class OpeningScreen extends StatelessWidget {
@@ -13,7 +14,6 @@ class OpeningScreen extends StatelessWidget {
       height: mq.size.height / 4,
     );
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Column(
           children: <Widget>[
@@ -70,7 +70,7 @@ class ButtonTile extends StatelessWidget {
     return Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(25.0),
-      color: buttonColor ?? Colors.white,
+      color: buttonColor ?? Fil_LanTheme.orange,
       child: MaterialButton(
         minWidth: mq.size.width / 1.5,
         child: Text(
@@ -85,7 +85,7 @@ class ButtonTile extends StatelessWidget {
         onPressed: () {
           Navigator.pushNamed(context, route!);
 
-          print('loggedin');
+          //print('loggedin');
         },
       ),
     );

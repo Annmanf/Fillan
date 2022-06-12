@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 
 class PaintChair extends StatelessWidget {
   final Color color;
-  final bool end;
 
   const PaintChair(
       {Key? key,
-      required this.end,
       this.color = const Color(
         0xff4D525A,
       )})
@@ -15,12 +13,12 @@ class PaintChair extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 5.0, left: 5.0, bottom: end ? 30.0 : 15.0),
+      margin:
+          const EdgeInsets.only(top: 5.0, right: 5.0, left: 5.0, bottom: 5.0),
       height: 12,
       width: 12,
       decoration:
           BoxDecoration(color: color, borderRadius: BorderRadius.circular(3.0)),
-      child: CustomPaint(painter: end ? _PainterChair() : _UpsidePainter()),
     );
   }
 }
@@ -34,18 +32,18 @@ class _PainterChair extends CustomPainter {
       ..strokeWidth = 1;
 
     final path = Path();
-
+/*
     path.moveTo(0, size.height * .2);
     path.lineTo(size.width * .2, size.height * .25);
-    path.lineTo(size.width * .2, size.height * .7);
+    /* path.lineTo(size.width * .2, size.height * .7);
     path.lineTo(size.width * .1, size.height);
     path.lineTo(size.width * .2, size.height * .7);
     path.lineTo(size.width * .8, size.height * .7);
     path.lineTo(size.width * .95, size.height);
     path.lineTo(size.width * .8, size.height * .7);
-    path.lineTo(size.width * .8, size.height * .25);
+    path.lineTo(size.width * .8, size.height * .25);*/
     path.lineTo(size.width, size.height * .2);
-
+*/
     canvas.drawPath(path, paint);
   }
 

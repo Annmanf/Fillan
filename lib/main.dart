@@ -1,24 +1,57 @@
-import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:fil_lan/logic/table_bloc.dart';
-import 'package:fil_lan/payment/swishtest.dart';
-import 'package:fil_lan/service/seat_firebase.dart';
 
 import 'package:fil_lan/screens/start/login_screen.dart';
 import 'package:fil_lan/screens/start/opening_screen.dart';
 import 'package:fil_lan/screens/start/register_screen.dart';
 import 'package:fil_lan/screens/wrapper.dart';
-import 'package:flutter/material.dart';
+import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'package:provider/provider.dart';
-import 'service/auth_services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
+import 'firebase_options.dart';
+import 'service/auth_services.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
+/*void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // set the publishable key for Stripe - this is mandatory
+  Stripe.publishableKey = Stripe.publishableKey;
+  runApp(PaymentScreen());
+   Stripe.publishableKey =
+      "pk_test_51L0nGKGdtQTNvsopeppmEFqiolVdgrUUCdGqK8a89EWLZQNTFfJmTXxb1Kc5D6d2JdHmPNLYrRhA01TISsi7o9Ng004vCzAZzS";
+  await Stripe.instance.applySettings();
+}*/
+
+//void main() => runApp(SwishDemoApp());
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(SwishDemoApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  if (defaultTargetPlatform == TargetPlatform.iOS ||
+      defaultTargetPlatform == TargetPlatform.android) {
+    // Some android/ios specific code
+  } else if (defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.macOS ||
+      defaultTargetPlatform == TargetPlatform.windows) {
+    // Some desktop specific code there
+  } else {
+    // Some web specific code there
+  }
+  // set the publishable key for Stripe
+  Stripe.publishableKey =
+      'pk_test_51L0nGKGdtQTNvsopeppmEFqiolVdgrUUCdGqK8a89EWLZQNTFfJmTXxb1Kc5D6d2JdHmPNLYrRhA01TISsi7o9Ng004vCzAZzS';
+  await Stripe.instance.applySettings();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -26,62 +59,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color back = Color(0xff212021);
-
-    Color orange = Color(0xffFBBB78);
-    Color blue = Color(0xff1ca3ae);
-    Color pink = Color(0xfff8a29f);
-    Color error = Color(0xffFF4566);
-    Color text = Color(0xff595959);
-
     return MultiProvider(
       providers: [
         Provider<AuthService>(
           create: (_) => AuthService(),
         ),
+        /*
         Provider<SeatFire>(
           create: (_) => SeatFire(),
-        ),
+        ),*/
         BlocProvider<TableBloc>(create: (context) => TableBloc())
       ],
       child: Builder(builder: (BuildContext context) {
         return MaterialApp(
-          theme: ThemeData(
-            scaffoldBackgroundColor: orange,
-            primarySwatch: createMaterialColor(pink),
-            primaryColor: pink,
-            colorScheme: ColorScheme(
-                primary: pink,
-                primaryVariant: pink,
-                secondary: orange,
-                secondaryVariant: orange,
-                surface: blue,
-                background: back,
-                error: error,
-                onPrimary: text,
-                onSecondary: text,
-                onSurface: text,
-                onBackground: Colors.white,
-                onError: Colors.white,
-                brightness: Brightness.dark),
-            textButtonTheme: TextButtonThemeData(
-              style: ButtonStyle(),
-            ),
-            dialogTheme: DialogTheme(
-              backgroundColor: blue,
-              titleTextStyle: GoogleFonts.lato(
-                textStyle: TextStyle(
-                  color: text,
-                  fontSize: 20,
-                ),
-              ),
-            ),
-            textTheme: TextTheme(
-              bodyText2: TextStyle(
-                color: text,
-              ),
-            ),
-          ),
+          theme: Fil_LanTheme.fil_lanTheme,
           title: "APP",
           initialRoute: '/',
           routes: {
@@ -116,4 +107,70 @@ MaterialColor createMaterialColor(Color color) {
     );
   }
   return MaterialColor(color.value, swatch);
+}
+
+class PaymentDemo extends StatelessWidget {
+  const PaymentDemo({Key? key}) : super(key: key);
+  Future<void> initPayment(
+      {required String email,
+      required double amount,
+      required BuildContext context}) async {
+    try {
+      // 1. Create a payment intent on the server
+      final response = await http.post(
+          Uri.parse(
+              'https://us-central1-fil-lan-f60bc.cloudfunctions.net/stripePaymentIntentRequest'),
+          body: {
+            'email': email,
+            'amount': amount.toString(),
+          });
+
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      // 2. Initialize the payment sheet
+      await Stripe.instance.initPaymentSheet(
+          paymentSheetParameters: SetupPaymentSheetParameters(
+        paymentIntentClientSecret: jsonResponse['paymentIntent'],
+        merchantDisplayName: 'Fil-lan anmälan',
+        customerId: jsonResponse['customer'],
+        customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+        testEnv: true,
+        merchantCountryCode: 'SG',
+      ));
+      await Stripe.instance.presentPaymentSheet();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Payment is successful'),
+        ),
+      );
+    } catch (errorr) {
+      if (errorr is StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occured ${errorr.error.localizedMessage}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occured $errorr'),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+          child: ElevatedButton(
+        child: const Text('Pay 20\$'),
+        onPressed: () async {
+          await initPayment(
+              amount: 50.0, context: context, email: 'email@test.com');
+        },
+      )),
+    );
+  }
 }

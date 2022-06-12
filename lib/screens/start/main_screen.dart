@@ -17,7 +17,6 @@ class MainScreen extends StatelessWidget {
       height: mq.size.height / 8,
     );
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

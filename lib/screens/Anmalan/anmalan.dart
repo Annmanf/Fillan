@@ -1,16 +1,15 @@
-import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 import 'package:fil_lan/models/tables.dart';
 import 'package:fil_lan/screens/Anmalan/checkbox_state.dart';
 import 'package:fil_lan/service/auth_services.dart';
-import 'package:fil_lan/service/seat_firebase.dart';
+import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 
 class Anmalan extends StatefulWidget {
-  var seats;
-  Anmalan({Key? key, this.seats}) : super(key: key);
+  final seats;
+  Anmalan({Key? key, required this.seats}) : super(key: key);
 
   @override
   State<Anmalan> createState() => _AnmalanState();
@@ -27,7 +26,7 @@ class _AnmalanState extends State<Anmalan> {
     final _formKey = GlobalKey<FormState>();
     final size = MediaQuery.of(context).size;
     final tableBloc = BlocProvider.of<TableBloc>(context);
-    SeatFire seatService = Provider.of<SeatFire>(context, listen: false);
+
     final authService = Provider.of<AuthService>(context);
     final TextEditingController textcontroller = TextEditingController();
 
@@ -39,163 +38,110 @@ class _AnmalanState extends State<Anmalan> {
             key: _formKey,
             child: Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 70, 20, 0),
-                  child: Text(
-                    'Kommer du spela datorspel eller tv-spel primärt?',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                const SizedBox(
+                  height: 55,
+                ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question: 'Kommer du spela datorspel eller tv-spel primärt?',
+                  label: 'spel',
+                  alt1: 'Dator',
+                  alt2: 'TV',
+                  radio: true,
+                ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question:
+                      'Vill du ha mat? (Frukost och lunch) Kostar ${Fil_LanTheme.food} tillägg',
+                  label: 'mat',
+                  alt1: 'Ja',
+                  alt2: 'Nej',
+                  radio: true,
+                ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question: 'Vilka turneringar är du intresserad av?',
+                  info:
+                      '(Detta är inte en anmälan, det här är endast en intresseanmälan. Vi prioriterar att arrangera de turneringar som får flest röster.)',
+                  label: 'turneringar',
+                  turneringar: const [
+                    'LoL',
+                    'FIFA',
+                    'JO',
+                    'crach',
+                    'lock',
+                    'anna',
+                    'hej'
+                  ],
+                  radio: false,
+                ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question: 'Önskar du sovplats?',
+                  info: '(Gäller endast för de som inte bor på öarna.)',
+                  label: 'sovplats',
+                  alt1: 'Ja',
+                  alt2: 'Nej',
+                  radio: true,
+                ),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade800,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                  child: RadioFormField(
-                      callback: setFieldValue,
-                      label: 'spel',
-                      alt1: 'Dator',
-                      alt2: 'TV'),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Text(
-                    'Vill du ha mat? (Frukost och lunch) Kostar ... tillägg',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                  child: RadioFormField(
-                    callback: setFieldValue,
-                    label: 'mat',
-                    alt1: 'Ja',
-                    alt2: 'Nej',
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
                   child: Column(
                     children: [
-                      Text(
-                        'Vilka turneringar är du intresserad av?',
-                        style: TextStyle(
-                          color: Colors.white,
+                      TextFormField(
+                        style: const TextStyle(
+                          color: Fil_LanTheme.lightTextColor,
                         ),
-                      ),
-                      Text(
-                        '(Detta är inte en anmälan, det här är endast en intresseanmälan. Vi prioriterar att arrangera de turneringar som får flest röster.)',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
+                        controller: textcontroller,
+                        decoration: const InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Fil_LanTheme.lightTextColor,
+                            ),
+                          ),
+                          hintText: "fri text...",
+                          labelText: "Något du vill säga?",
+                          labelStyle: TextStyle(
+                            color: Fil_LanTheme.lightTextColor,
+                          ),
+                          hintStyle: TextStyle(
+                            color: Fil_LanTheme.lightTextColor,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SafeArea(
-                  child: Container(
-                    height: 100,
-                    padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                    child: CheckboxFormField(
-                        callback: setFieldValue,
-                        label: 'turneringar',
-                        turneringar: ['LoL', 'FIFA']),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Önskar du sovplats? ()',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '(Gäller endast för de som inte bor på öarna.)',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                  child: RadioFormField(
-                    callback: setFieldValue,
-                    label: 'sovplats',
-                    alt1: 'Ja',
-                    alt2: 'Nej',
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: TextFormField(
-                    controller: textcontroller,
-                    decoration: const InputDecoration(
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.white,
-                        ),
-                      ),
-                      hintText: "free text...",
-                      labelText: "Anything you want to say?",
-                      labelStyle: TextStyle(
-                        color: Colors.white,
-                      ),
-                      hintStyle: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) return 'Field is required.';
+                        validator: (value) {
+                          //if (value!.isEmpty) return 'Field is required.';
 
-                      return null;
-                    },
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                Container(
-                  height: 70,
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Text(
-                    'Jag är okej med att vara med på bilder och filmer som kan läggas ut på sociala medier.',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question:
+                      'Jag är okej med att vara med på bilder och filmer som kan läggas ut på sociala medier.',
+                  label: 'gdpr',
+                  alt1: 'Ja',
+                  radio: true,
                 ),
-                Container(
-                  height: 100,
-                  padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                  child: RadioFormField(
-                    callback: setFieldValue,
-                    label: 'gdpr',
-                    alt1: 'Ja',
-                  ),
-                ),
-                Container(
-                  height: 70,
-                  padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-                  child: Text(
-                    'Jag har läst och godkänner reglerna?',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 100,
-                  padding: EdgeInsets.fromLTRB(70, 20, 70, 0),
-                  child: RadioFormField(
-                    callback: setFieldValue,
-                    label: 'regler',
-                    alt1: 'Ja',
-                  ),
+                RegisterFormBox(
+                  color: Colors.grey.shade800,
+                  callback: setFieldValue,
+                  question: 'Jag har läst och godkänner reglerna?',
+                  label: 'regler',
+                  alt1: 'Ja',
+                  radio: true,
                 ),
                 Container(
                   height: 100,
@@ -206,69 +152,151 @@ class _AnmalanState extends State<Anmalan> {
 
                       Navigator.of(context).pushNamed('/book_screen');
                     },
-                    child: Text(
+                    child: const Text(
                       'Book Seat',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Fil_LanTheme.lightTextColor),
                     ),
                   ),
                 ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
-                  child: Material(
-                    elevation: 5,
-                    borderRadius: BorderRadius.circular(25.0),
-                    color: Colors.white,
-                    child: MaterialButton(
-                      child: Text(
-                        'Anmäl',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 20.0,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
+                  child: ElevatedButton(
+                    style: Fil_LanTheme.butPStyle,
+                    child: const Text(
+                      'Fortsätt till betalning',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
                       ),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          String res = tableBloc.getSelectedSeat();
-
-                          String b = res.substring(0, 1);
-                          int h = int.parse(res.substring(0, 1));
-
-                          int l = int.parse(res.substring(1, 2));
-                          //List<Tables> seat = globals.seats as List<Tables>;
-
-                          List<Tables> seat = [];
-                          for (var item in widget.seats) {
-                            seat.add(item);
-                          }
-                          seat[h - 1].freeSeats.remove(l);
-
-                          List<dynamic> newFree = seat[h - 1].freeSeats;
-                          seatService.chooseSeat(b, newFree);
-                          _formKey.currentState!.save();
-                          authService.addAnmalan(
-                              fieldValues['spel']!,
-                              fieldValues['mat']!,
-                              fieldValues['turneringar']!,
-                              fieldValues['sovplats']!,
-                              textcontroller.text,
-                              fieldValues['gdpr']!,
-                              fieldValues['regler']!,
-                              '${tableBloc.state.selectedSeats[0]} ');
-
-                          Navigator.popUntil(context,
-                              ModalRoute.withName(Navigator.defaultRouteName));
-                        }
-                        return;
-                      },
                     ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        String res = tableBloc.getSelectedSeat();
+
+                        String b = res.substring(0, 1);
+                        int h = int.parse(res.substring(0, 1));
+
+                        int l = int.parse(res.substring(1, 2));
+                        //List<Tables> seat = globals.seats as List<Tables>;
+
+                        List<Tables> seat = [];
+                        for (var item in widget.seats) {
+                          seat.add(item);
+                        }
+                        //seat[h - 1].freeSeats.remove(l);
+
+                        //List<dynamic> newFree = seat[h - 1].freeSeats;
+                        // seatService.chooseSeat(b, newFree);
+
+                        _formKey.currentState!.save();
+                        /*
+                        var route = MaterialPageRoute(
+                            builder: (BuildContext context) => PaymentScreen(
+                                  cost: fieldValues['mat'] == 'Ja'
+                                      ? Fil_LanTheme.cost + Fil_LanTheme.food
+                                      : Fil_LanTheme.cost,
+                                ));
+                        Navigator.of(context).push(route);*/
+/*
+                        authService.addAnmalan(
+                            fieldValues['spel']!,
+                            fieldValues['mat']!,
+                            fieldValues['turneringar']!,
+                            fieldValues['sovplats']!,
+                            textcontroller.text,
+                            fieldValues['gdpr']!,
+                            fieldValues['regler']!,
+                            'no seat yet');
+                        //,'${tableBloc.state.selectedSeats[0]} ');
+
+                        Navigator.popUntil(context,
+                            ModalRoute.withName(Navigator.defaultRouteName));*/
+                      }
+                      return;
+                    },
                   ),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class RegisterFormBox extends StatefulWidget {
+  final Color color;
+  final Function callback;
+  final String question;
+  final String label;
+  final String? alt1;
+  final String? alt2;
+  final List<String>? turneringar;
+  final bool radio;
+  final String? info;
+  const RegisterFormBox(
+      {Key? key,
+      required this.color,
+      required this.callback,
+      required this.question,
+      required this.label,
+      required this.radio,
+      this.alt1,
+      this.alt2,
+      this.turneringar,
+      this.info})
+      : super(key: key);
+
+  @override
+  _RegisterFormBoxState createState() => _RegisterFormBoxState();
+}
+
+class _RegisterFormBoxState extends State<RegisterFormBox> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: widget.color,
+      ),
+      child: Column(
+        children: [
+          Text(
+            widget.question,
+            style: Fil_LanTheme.slTextStyle,
+          ),
+          widget.info != null
+              ? Text(
+                  widget.info!,
+                  style: const TextStyle(
+                    fontSize: 10,
+                  ),
+                )
+              : Column(),
+          widget.radio
+              ? RadioFormField(
+                  callback: widget.callback,
+                  label: widget.label,
+                  alt1: widget.alt1!,
+                  alt2: widget.alt2)
+              : SafeArea(
+                  child: Container(
+                    height: 100,
+                    padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
+                    child: CheckboxFormField(
+                        callback: widget.callback,
+                        label: widget.label,
+                        turneringar: widget.turneringar!),
+                  ),
+                ),
+        ],
       ),
     );
   }
@@ -301,14 +329,14 @@ class _RadioFormFieldState extends State<RadioFormField> {
           children: [
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   widget.alt1,
-                  style: TextStyle(
-                    color: Colors.white,
-                  ),
+                  style: TextStyle(color: Colors.white70),
                 ),
                 Radio<String>(
+                  activeColor: Fil_LanTheme.blue,
                   value: widget.alt1,
                   groupValue: radioValue,
                   onChanged: (value) => setState(() => radioValue = value!),
@@ -318,14 +346,15 @@ class _RadioFormFieldState extends State<RadioFormField> {
             Visibility(
               visible: (widget.alt2 != null) ? true : false,
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Text(
                     widget.alt2 ?? '',
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white70),
                   ),
                   Radio<String>(
+                    activeColor: Fil_LanTheme.blue,
                     value: widget.alt2 ?? '',
                     groupValue: radioValue,
                     onChanged: (value) => setState(() => radioValue = value!),
@@ -369,19 +398,19 @@ class CheckboxFormField extends StatefulWidget {
 
 class _CheckboxFormFieldState extends State<CheckboxFormField> {
   bool checkboxValue = false;
-  final turnering = [CheckBoxState(title: 'Lol'), CheckBoxState(title: 'Fifa')];
+  //final turnering = [CheckBoxState(title: 'Lol'), CheckBoxState(title: 'Fifa')];
   Map<String, bool> values = {
     'foo': true,
     'bar': false,
   };
-  Map<String, bool> List = {
+  Map<String, bool> list = {
     'LoL': false,
     'FIFA': false,
   };
   var holder_1 = [];
 
   getItems() {
-    List.forEach((key, value) {
+    list.forEach((key, value) {
       if (value == true) {
         holder_1.add(key);
       }
@@ -403,15 +432,16 @@ class _CheckboxFormFieldState extends State<CheckboxFormField> {
           children: [
             Expanded(
               child: ListView(
-                children: List.keys.map((String key) {
+                children: list.keys.map((String key) {
                   return CheckboxListTile(
                     title: Text(key),
-                    value: List[key],
-                    activeColor: Colors.deepPurple[400],
-                    checkColor: Colors.white,
+                    value: list[key],
+                    activeColor: Fil_LanTheme.pink,
+                    checkColor: Fil_LanTheme.darkTextColor,
+                    tileColor: Fil_LanTheme.lightTextColor,
                     onChanged: (bool? value) {
                       setState(() {
-                        List[key] = value!;
+                        list[key] = value!;
                       });
                     },
                   );

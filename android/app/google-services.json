@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "450326154861",
+    "firebase_url": "https://fil-lan-f60bc-default-rtdb.europe-west1.firebasedatabase.app",
     "project_id": "fil-lan-f60bc",
     "storage_bucket": "fil-lan-f60bc.appspot.com"
   },
@@ -10,6 +11,42 @@
         "mobilesdk_app_id": "1:450326154861:android:401e7d5cc762b6084b3964",
         "android_client_info": {
           "package_name": "com.example.fil_lan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "450326154861-il7hclmq2jg7vavcu7jpgejkvungsfoc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3Xqb19jULhfT8Nw2-nLqTBMV4buoCUO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "450326154861-il7hclmq2jg7vavcu7jpgejkvungsfoc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "450326154861-qb0o7vi6nd3hdnidl67ne8ur0vdlu26l.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.filLan"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:450326154861:android:96921707921f99254b3964",
+        "android_client_info": {
+          "package_name": "com.example.new_lan"
         }
       },
       "oauth_client": [

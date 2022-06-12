@@ -5,6 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 class AuthService {
   final auth.FirebaseAuth _firebaseAuth = auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final CollectionReference hmm =
+      FirebaseFirestore.instance.collection('selectedSeats');
+
+  final CollectionReference _selSeats =
+      FirebaseFirestore.instance.collection('users');
 
   User? _user;
 
@@ -28,7 +33,7 @@ class AuthService {
 
         return nested;
       } on StateError catch (e) {
-        print('No nested field exists!');
+        // . print('isanmald?: No nested field exists!');
         return false;
       }
     });
@@ -89,12 +94,16 @@ class AuthService {
     void Function(auth.FirebaseAuthException e) errorCallback,
   ) async {
     try {
+      print("försök");
       final credentials = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+
+      print("success??");
       return _userFromFirebase(credentials.user);
     } on auth.FirebaseAuthException catch (e) {
+      print("fireauthnoo ${e.message} ");
       errorCallback(e);
     }
   }
@@ -130,6 +139,7 @@ class AuthService {
       //addUser(firstname, lastname, email, birthdate, adress, phonenumber,
       //password, uid, (e) {});
     } on auth.FirebaseAuthException catch (e) {
+      print("fireauthnoo ${e.message} ");
       errorCallback(e);
     }
   }
@@ -303,12 +313,38 @@ class AuthService {
         print('statusfromfire $nested');
         return value.get(FieldPath(['status']));
       } on StateError catch (e) {
-        print('No nested field exists!');
+        print('get Status?: No nested field exists!');
         return false;
       }
     });
     return false;
     //return false;
+  }
+
+  DocumentReference<Map<String, dynamic>>? get anmald {
+    // _firestore.collection('users').doc(uid).get().then((value) {});
+    bool j;
+
+    DocumentReference<Map<String, dynamic>> hej =
+        _firestore.collection('users').doc(uid);
+    _firestore.collection('users').doc(uid).snapshots().listen((event) {
+      j = event.get(FieldPath(['anmald']));
+    });
+    return hej;
+
+    /*Stream<QueryDocumentSnapshot> anmaldStream =
+        _firestore.collection('users').doc(uid).snapshots();
+    _firestore.collection('users').doc(uid).get().then((value) {
+      try {
+        value.get(FieldPath(['anmald']));
+        print('statusfromfire $nested');
+
+        return value.get(FieldPath(['anmald']));
+      } on StateError catch (e) {
+        print('No nested field exists!');
+        return false;
+      }
+    });*/
   }
 
   Future<void> setStatus(bool hh) async {
@@ -369,6 +405,78 @@ class AuthService {
         print(
             'The user must reauthenticate before this operation can be executed.');
       }
+    }
+  }
+
+  Map<String, String> hej = {};
+  String? seat;
+
+  String? get selectedSeats {
+    return seat;
+  }
+
+  Future<void> getSelectedSeats() async {
+    try {
+      _selSeats.doc(uid).get().then((value) {
+        try {
+          value.get(FieldPath(['sittplats']));
+          print('statusfromfire $nested');
+          seat = value.get(FieldPath(['sittplats']));
+        } on StateError catch (e) {
+          print('get selected Seats?: No nested field exists!');
+          return false;
+        }
+      });
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+    /*var b;
+    try {
+      _selSeats.snapshots().forEach((element) {
+        if (element.exists) {
+          b = element.data() as List<String>;
+          print(b);
+        }
+      });
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+
+    return b ?? [];*/
+  }
+
+  String? seatForUsr;
+  String? get usersSeat {
+    return seatForUsr;
+  }
+
+/*
+  Future<void> getUsersSeat() {
+    String tmp;
+    try {
+      tmp = _selSeats
+          .snapshots()
+          .singleWhere((element) => element.get([uid]))
+          .toString();
+      seatForUsr = tmp;
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
+    }
+    throw '';
+  }*/
+  Future<void> addSelectedSeats(String seat) async {
+    try {
+      _selSeats
+          .doc(uid)
+          .update(
+            {
+              'sittplats': seat,
+            },
+          )
+          .then((value) => print('sittplats updated'))
+          .catchError((error) => print("Failed to update sittplats: $error"));
+    } on auth.FirebaseAuthException catch (e) {
+      print(e.message);
     }
   }
 }

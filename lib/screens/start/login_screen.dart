@@ -17,7 +17,6 @@ class LoginScreen extends StatelessWidget {
       height: mq.size.height / 8,
     );
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -112,14 +111,14 @@ class LoginScreen extends StatelessWidget {
                 onPressed: () async {
                   final String email = _emailController.text;
                   final String password = _passwordController.text;
-
+                  print("jao");
                   await authService.login(
                     email,
                     password,
                     (e) => _showErrorDialog(context, 'Failed to sign in', e),
                   );
-
-                  Navigator.pop(context);
+                  print("noo");
+                  Navigator.of(context).pop();
                 },
               ),
             ),
