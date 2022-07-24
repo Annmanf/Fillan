@@ -13,7 +13,7 @@ class MainScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context);
     final mq = MediaQuery.of(context);
     final logo = Image.asset(
-      "assets/milk-box.png",
+      "assets/Fil-LAN-LOGO.png",
       height: mq.size.height / 8,
     );
     return Scaffold(

@@ -54,7 +54,7 @@ class _AnmalanState extends State<Anmalan> {
                   color: Colors.grey.shade800,
                   callback: setFieldValue,
                   question:
-                      'Vill du ha mat? (Frukost och lunch) Kostar ${Fil_LanTheme.food} tillägg',
+                      'Vill du ha mat? (Frukost och lunch) Kostar ${FilLanTheme.food} tillägg',
                   label: 'mat',
                   alt1: 'Ja',
                   alt2: 'Nej',
@@ -99,27 +99,26 @@ class _AnmalanState extends State<Anmalan> {
                     children: [
                       TextFormField(
                         style: const TextStyle(
-                          color: Fil_LanTheme.lightTextColor,
+                          color: FilLanTheme.lightTextColor,
                         ),
                         controller: textcontroller,
                         decoration: const InputDecoration(
                           focusedBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
-                              color: Fil_LanTheme.lightTextColor,
+                              color: FilLanTheme.lightTextColor,
                             ),
                           ),
                           hintText: "fri text...",
                           labelText: "Något du vill säga?",
                           labelStyle: TextStyle(
-                            color: Fil_LanTheme.lightTextColor,
+                            color: FilLanTheme.lightTextColor,
                           ),
                           hintStyle: TextStyle(
-                            color: Fil_LanTheme.lightTextColor,
+                            color: FilLanTheme.lightTextColor,
                           ),
                         ),
                         validator: (value) {
                           //if (value!.isEmpty) return 'Field is required.';
-
                           return null;
                         },
                       ),
@@ -143,6 +142,7 @@ class _AnmalanState extends State<Anmalan> {
                   alt1: 'Ja',
                   radio: true,
                 ),
+                /*
                 Container(
                   height: 100,
                   child: InkWell(
@@ -156,14 +156,14 @@ class _AnmalanState extends State<Anmalan> {
                       'Book Seat',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Fil_LanTheme.lightTextColor),
+                          color: FilLanTheme.lightTextColor),
                     ),
                   ),
-                ),
+                ),*/
                 Padding(
                   padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
                   child: ElevatedButton(
-                    style: Fil_LanTheme.butPStyle,
+                    style: FilLanTheme.butPStyle,
                     child: const Text(
                       'Fortsätt till betalning',
                       textAlign: TextAlign.center,
@@ -175,7 +175,7 @@ class _AnmalanState extends State<Anmalan> {
                     ),
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        String res = tableBloc.getSelectedSeat();
+                        /*String res = tableBloc.getSelectedSeat();
 
                         String b = res.substring(0, 1);
                         int h = int.parse(res.substring(0, 1));
@@ -187,21 +187,23 @@ class _AnmalanState extends State<Anmalan> {
                         for (var item in widget.seats) {
                           seat.add(item);
                         }
+                        */
                         //seat[h - 1].freeSeats.remove(l);
 
                         //List<dynamic> newFree = seat[h - 1].freeSeats;
                         // seatService.chooseSeat(b, newFree);
 
                         _formKey.currentState!.save();
-                        /*
-                        var route = MaterialPageRoute(
-                            builder: (BuildContext context) => PaymentScreen(
-                                  cost: fieldValues['mat'] == 'Ja'
-                                      ? Fil_LanTheme.cost + Fil_LanTheme.food
-                                      : Fil_LanTheme.cost,
-                                ));
-                        Navigator.of(context).push(route);*/
 /*
+                        var route = MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                PaymentSheetScreen(
+                                    //cost: fieldValues['mat'] == 'Ja'
+                                    //  ? FilLanTheme.cost + FilLanTheme.food
+                                    //: FilLanTheme.cost,
+                                    ));
+                        Navigator.of(context).push(route);*/
+
                         authService.addAnmalan(
                             fieldValues['spel']!,
                             fieldValues['mat']!,
@@ -214,7 +216,7 @@ class _AnmalanState extends State<Anmalan> {
                         //,'${tableBloc.state.selectedSeats[0]} ');
 
                         Navigator.popUntil(context,
-                            ModalRoute.withName(Navigator.defaultRouteName));*/
+                            ModalRoute.withName(Navigator.defaultRouteName));
                       }
                       return;
                     },
@@ -270,7 +272,7 @@ class _RegisterFormBoxState extends State<RegisterFormBox> {
         children: [
           Text(
             widget.question,
-            style: Fil_LanTheme.slTextStyle,
+            style: FilLanTheme.slTextStyle,
           ),
           widget.info != null
               ? Text(
@@ -336,7 +338,7 @@ class _RadioFormFieldState extends State<RadioFormField> {
                   style: TextStyle(color: Colors.white70),
                 ),
                 Radio<String>(
-                  activeColor: Fil_LanTheme.blue,
+                  activeColor: FilLanTheme.blue,
                   value: widget.alt1,
                   groupValue: radioValue,
                   onChanged: (value) => setState(() => radioValue = value!),
@@ -354,7 +356,7 @@ class _RadioFormFieldState extends State<RadioFormField> {
                     style: TextStyle(color: Colors.white70),
                   ),
                   Radio<String>(
-                    activeColor: Fil_LanTheme.blue,
+                    activeColor: FilLanTheme.blue,
                     value: widget.alt2 ?? '',
                     groupValue: radioValue,
                     onChanged: (value) => setState(() => radioValue = value!),
@@ -436,9 +438,9 @@ class _CheckboxFormFieldState extends State<CheckboxFormField> {
                   return CheckboxListTile(
                     title: Text(key),
                     value: list[key],
-                    activeColor: Fil_LanTheme.pink,
-                    checkColor: Fil_LanTheme.darkTextColor,
-                    tileColor: Fil_LanTheme.lightTextColor,
+                    activeColor: FilLanTheme.pink,
+                    checkColor: FilLanTheme.darkTextColor,
+                    tileColor: FilLanTheme.lightTextColor,
                     onChanged: (bool? value) {
                       setState(() {
                         list[key] = value!;

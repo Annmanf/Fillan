@@ -13,7 +13,7 @@ class LoginScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context);
     final mq = MediaQuery.of(context);
     final logo = Image.asset(
-      "assets/milk-box.png",
+      "assets/Fil-LAN-LOGO.png",
       height: mq.size.height / 8,
     );
     return Scaffold(
@@ -48,7 +48,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Enter your email address to continue';
+                          return 'Skriv din mail-adress för att fortsätta';
                         }
                         return null;
                       },
@@ -67,8 +67,8 @@ class LoginScreen extends StatelessWidget {
                       color: Colors.white,
                     ),
                   ),
-                  hintText: "password",
-                  labelText: "Password",
+                  hintText: "lösenord",
+                  labelText: "Lösenord",
                   labelStyle: TextStyle(
                     color: Colors.white,
                   ),
@@ -78,7 +78,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Enter a password to continue';
+                    return 'Skriv ett lösenord för att fortsätta';
                   }
                   return null;
                 },
@@ -89,7 +89,7 @@ class LoginScreen extends StatelessWidget {
               children: <Widget>[
                 MaterialButton(
                     child: Text(
-                      "Forgot Password",
+                      "Glömt lösenord",
                       style: Theme.of(context)
                           .textTheme
                           .caption
@@ -170,7 +170,7 @@ class LoginScreen extends StatelessWidget {
           TextEditingController _emailControllerField = TextEditingController();
           final mq = MediaQuery.of(context);
           return AlertDialog(
-            title: Text("Insert Reset Email:"),
+            title: Text("Skriv e-mail för lösenordsåterställning:"),
             content: Container(
               width: MediaQuery.of(context).size.width / 1.2,
               height: MediaQuery.of(context).size.height / 4.5,
@@ -207,7 +207,7 @@ class LoginScreen extends StatelessWidget {
                           // TODO: Add snackbar reporting error
                         }
                       },
-                      child: Text("Send Reset Email"),
+                      child: Text("Skicka återställnings till mail"),
                     ),
                   ),
                 ],

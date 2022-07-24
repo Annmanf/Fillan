@@ -34,12 +34,12 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Image.asset(
-              "assets/FIL-LAN22.png",
+              "assets/Fil-LAN-LOGO.png",
               height: 30,
               color: Theme.of(context).colorScheme.onSurface,
             ),
             activeIcon: Image.asset(
-              "assets/FIL-LAN22.png",
+              "assets/Fil-LAN-LOGO.png",
               height: 30,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -47,14 +47,32 @@ class _BottomNavScreenState extends State<BottomNavScreen> {
             tooltip: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
+            icon: Image.asset(
+              "assets/StudioVit.png",
+              height: 30,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            activeIcon: Image.asset(
+              "assets/StudioVit.png",
+              height: 30,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             label: 'Studio',
             tooltip: 'Studio',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle),
-            label: 'Profile',
-            tooltip: 'Profile',
+            icon: Image.asset(
+              "assets/ProfilVit.png",
+              height: 30,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+            activeIcon: Image.asset(
+              "assets/ProfilVit.png",
+              height: 30,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            label: 'Profil',
+            tooltip: 'Profil',
           ),
         ],
       ),

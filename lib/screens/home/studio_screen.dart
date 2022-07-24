@@ -1,3 +1,4 @@
+import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:flutter/material.dart';
 
 class StudioScreen extends StatelessWidget {
@@ -11,18 +12,31 @@ class StudioScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: const [
-          SizedBox(
-            child: Text(
-              "STUDIO",
-              style: TextStyle(
-                color: Color(0xffffffff),
-                overflow: TextOverflow.visible,
-                fontFamily: 'Roboto',
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Center(
+              child: SizedBox(
+                child: Text(
+                  "STUDIO",
+                  style: FilLanTheme.hdlbTextStyle,
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
           ),
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Center(
+              child: SizedBox(
+                child: Text(
+                  "Kommer snart...",
+                  style: FilLanTheme.hddlTextStyle,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(),
         ],
       ),
     );

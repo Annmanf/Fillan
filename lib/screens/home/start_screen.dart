@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
+import 'package:fil_lan/models/tables.dart';
 import 'package:fil_lan/screens/Anmalan/anmalan.dart';
+import 'package:fil_lan/screens/Anmalan/book_screen.dart';
 import 'package:fil_lan/service/auth_services.dart';
 import 'package:fil_lan/screens/home/bottom_nav_screen.dart';
 import 'package:fil_lan/screens/home/home_screen.dart';
 import 'package:fil_lan/screens/home/profile_screen.dart';
 import 'package:fil_lan/screens/home/studio_screen.dart';
+import 'package:fil_lan/service/seat_service.dart';
 import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class StartScreen extends StatefulWidget {
@@ -20,26 +22,23 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TableBloc _blocSeater = TableBloc();
+  List<Tables>? allSeats;
+  int nrTables = 0;
 
-  var seats = [];
+  //var seats = [];
 
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final seatService = Provider.of<SeatService>(context);
 
-    Future.delayed(const Duration(seconds: 1), () async {
-      // await for the Firebase initialization to occur
-      /* await seatService.addTablesInFirebase(
-          9,
-          [
-            {0: 1},
-            {1: 2},
-            {2: 3},
-            {3: 4},
-            {4: 5}
-          ],
-          9);*/
+    Future.delayed(const Duration(seconds: 0), () async {
+      print('hello');
+      await authService.getData();
+      await seatService.addTablesInFirebase(9, [1, 2, 3, 4, 5, 6, 7, 8, 9], 9);
+
       /*
       await seatService.getSeatsFromFirebas((e) {}).then((value) {
         setState(() {
@@ -48,9 +47,6 @@ class _StartScreenState extends State<StartScreen> {
 
         //print('fetched tables');
       });*/
-
-      authService.getData();
-      //authService.getSelectedSeats();
     });
     Color back = Color(0xff212021);
 
@@ -60,12 +56,9 @@ class _StartScreenState extends State<StartScreen> {
     Color error = Color(0xffFF4566);
     Color text = Color(0xff595959);
     return MaterialApp(
-      theme: Fil_LanTheme.fil_lanTheme,
+      theme: FilLanTheme.filLanTheme,
       routes: {
-        '/': (ctx) => BlocProvider.value(
-              value: _blocSeater,
-              child: const BottomNavScreen(),
-            ),
+        '/': (ctx) => const BottomNavScreen(),
         '/home_screen': (ctx) => BlocProvider.value(
               value: _blocSeater,
               child: HomeScreen(),
@@ -80,7 +73,11 @@ class _StartScreenState extends State<StartScreen> {
             ),
         '/anmalan_screen': (ctx) => BlocProvider.value(
               value: _blocSeater,
-              child: Anmalan(seats: seats),
+              child: Anmalan(seats: allSeats),
+            ),
+        '/book_screen': (ctx) => BlocProvider.value(
+              value: _blocSeater,
+              child: const BookSeats(),
             ),
       },
     );
@@ -92,6 +89,40 @@ class _StartScreenState extends State<StartScreen> {
     _blocSeater.close();
     super.dispose();
   }
+
+  getInitials() async {
+    var tmp = await getlength();
+    var seats = await getTables();
+
+    setState(() {
+      nrTables = tmp;
+      allSeats = seats;
+    });
+  }
+
+  Future<int> getlength() async {
+    return await _firestore.collection('seats').snapshots().length;
+  }
+
+  Future<List<Tables>> getTables() async {
+    List<Tables> tables = [];
+    await _firestore.collection('seats').snapshots().forEach((element) {
+      element.docs.forEach((item) {
+        if (item.exists) {
+          Map<String, dynamic> data = item.data();
+          Tables table = Tables.fromJson(data);
+          if (!tables.contains(table)) {
+            tables.add(table);
+          }
+        }
+      });
+    });
+    print('tables $tables');
+    return tables;
+  }
+
+  CollectionReference _collectionRef =
+      FirebaseFirestore.instance.collection('seats');
 }
 
 MaterialColor createMaterialColor(Color color) {

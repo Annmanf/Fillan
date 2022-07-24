@@ -64,10 +64,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   validator: (value) {
-                    if (value!.isEmpty) return 'Field is required.';
+                    if (value!.isEmpty) return 'Fälted är obligatoriskt.';
                     String pattern = r'\w+@\w+\.\w+';
                     if (!RegExp(pattern).hasMatch(value))
-                      return 'Invalid E-mail Address format.';
+                      return 'Otillåtet email address format.';
                     return null;
                   },
                 ),
@@ -264,7 +264,7 @@ class _NamePassState extends State<NamePass> {
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Enter a password to continue';
+                      return 'Skriv in ett lösenord för att fortsätta';
                     }
                     return null;
                   },
@@ -428,9 +428,9 @@ class _AdressPhoneState extends State<AdressPhone> {
                   ),
                   validator: (value) {
                     if (value!.isEmpty) {
-                      return 'Please enter some text';
+                      return 'Var god att fyll i detta fält';
                     } else if (regExp2.hasMatch(value)) {
-                      return "input more.";
+                      return "Skriv lite mer.";
                     }
                     return null;
                   },
@@ -510,7 +510,10 @@ class _AdressPhoneState extends State<AdressPhone> {
                           final String phonenumber =
                               _phonenumberController.text;
                           final String password = widget.password;
-
+                          await authService.verifyEmail(email, (e) {
+                            _showErrorDialog(context,
+                                'Lyckades inte verifiera mailadress', e);
+                          });
                           await authService.signUp(
                             firstname,
                             lastname,
@@ -519,8 +522,8 @@ class _AdressPhoneState extends State<AdressPhone> {
                             adress,
                             phonenumber,
                             password,
-                            (e) => _showErrorDialog(
-                                context, 'Failed to register', e),
+                            (e) => _showErrorDialog(context,
+                                'Lyckades inte registrera användare', e),
                           );
                           Navigator.popUntil(context,
                               ModalRoute.withName(Navigator.defaultRouteName));
@@ -689,7 +692,7 @@ class _KontaktPersonState extends State<KontaktPerson> {
                     if (value!.isEmpty) return 'Field is required.';
                     String pattern = r'\w+@\w+\.\w+';
                     if (!RegExp(pattern).hasMatch(value))
-                      return 'Invalid E-mail Address format.';
+                      return 'Otillåtet mailaddressformat.';
                     return null;
                   },
                 ),
@@ -758,7 +761,10 @@ class _KontaktPersonState extends State<KontaktPerson> {
                         final String contactphone = _konPhoneController.text;
                         final String contactemail = _konEmailController.text;
                         final String password = widget.password;
-
+                        await authService.verifyEmail(email, (e) {
+                          _showErrorDialog(
+                              context, 'Lyckades inte verifiera mailadress', e);
+                        });
                         await authService.signUpWithContacts(
                           firstname,
                           lastname,
@@ -772,7 +778,7 @@ class _KontaktPersonState extends State<KontaktPerson> {
                           contactemail,
                           password,
                           (e) => _showErrorDialog(
-                              context, 'Failed to register', e),
+                              context, 'Lyckades inte registrera anävndare', e),
                         );
                       }
                       Navigator.popUntil(context,

@@ -1,13 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fil_lan/logic/anmaldCubit/anmald_cubit.dart';
 import 'package:fil_lan/service/auth_services.dart';
 import 'package:fil_lan/theme/fil_theme.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:flutter_countdown_timer/index.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   static const routeName = '/home-screen';
@@ -41,35 +39,63 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.fromLTRB(36, 60, 36, 20),
       child: Column(
         children: [
-          const SizedBox(
-            child: Text(
-              "FIL-LAN ANMÄLAN ÖPPNAR OM:",
-              style: Fil_LanTheme.hdlbTextStyle,
-              textAlign: TextAlign.center,
-            ),
-          ),
+          countdown
+              ? const Padding(
+                  padding: EdgeInsets.only(top: 10),
+                  child: SizedBox(
+                    child: Text(
+                      "ANMÄLAN ÖPPEN",
+                      style: FilLanTheme.hdlbTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : const Padding(
+                  padding: EdgeInsets.only(top: 30),
+                  child: SizedBox(
+                    child: Text(
+                      "FIL-LAN ANMÄLAN ÖPPNAR OM:",
+                      style: FilLanTheme.hdlbTextStyle,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: CountdownTimer(
               widgetBuilder: (context, time) {
-                if (time == null) {
-                  setState(() {
-                    countdown = true;
-                  });
-                  return const Text(
-                    "Anmälan Öppen",
-                    style: Fil_LanTheme.hdllTextStyle,
-                  );
+                if (time != null) {
+                  if (time.days != null) {
+                    return Text(
+                      "${time.days}d ${time.hours}h ${time.min}m ${time.sec}s",
+                      style: Theme.of(context).textTheme.headline2,
+                    );
+                  } else if (time.hours != null) {
+                    return Text(
+                      "${0}d ${time.hours}h ${time.min}m ${time.sec}s",
+                      style: Theme.of(context).textTheme.headline2,
+                    );
+                  } else if (time.min != null) {
+                    return Text(
+                      "${0}d ${0}h ${0}m ${time.sec}s",
+                      style: Theme.of(context).textTheme.headline2,
+                    );
+                  }
                 } else {
                   return Text(
-                    "${time.days}d ${time.hours}h ${time.min}m ${time.sec}s",
+                    "",
                     style: Theme.of(context).textTheme.headline2,
                   );
                 }
+                return Text(
+                  "${time.days}d ${time.hours}h ${time.min}m ${time.sec}s",
+                  style: Theme.of(context).textTheme.headline2,
+                );
               },
-              textStyle: Fil_LanTheme.hdllTextStyle,
+              textStyle: FilLanTheme.hdllTextStyle,
               endTime:
-                  DateTime.parse("2022-07-30 23:59:59Z").millisecondsSinceEpoch,
+                  DateTime.parse("2022-06-21 23:59:59Z").millisecondsSinceEpoch,
+              onEnd: _onTimerEnd(),
             ),
           ),
           countdown
@@ -78,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.fromLTRB(70, 100, 70, 0),
                       child: Text(
                         'Du är anmäld',
-                        style: Fil_LanTheme.hdllTextStyle,
+                        style: FilLanTheme.hdllTextStyle,
                       ),
                     )
                   : Padding(
@@ -89,7 +115,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: const [
                             Text(
                               'Anmäl dig',
-                              style: Fil_LanTheme.hdllTextStyle,
+                              style: FilLanTheme.hdllTextStyle,
                               textAlign: TextAlign.center,
                             ),
                             Icon(Icons.arrow_forward_ios),
@@ -104,11 +130,76 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     )
               : const SizedBox(),
+          Expanded(
+            child: const Text(
+                'Årets feature: boka din egna sittplats för lanet! (Öppnar snart)'),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                IconButton(
+                  onPressed: () => launchUrl(
+                    Uri(
+                        scheme: 'https',
+                        host: 'www.twitch.tv',
+                        path: '/studiofillan'),
+                  ),
+                  icon: Image.asset('assets/discord.png'),
+                ),
+                IconButton(
+                  onPressed: () => launchUrl(
+                    Uri(
+                        scheme: 'https',
+                        host: 'www.twitch.tv',
+                        path: '/studiofillan'),
+                  ),
+                  icon: Image.asset('assets/twitch.png'),
+                ),
+                IconButton(
+                  onPressed: () => launchUrl(
+                    Uri(
+                        scheme: 'https',
+                        host: 'www.instagram.com',
+                        path: '/studiofillan'),
+                  ),
+                  icon: Image.asset('assets/instagram.png'),
+                ),
+                IconButton(
+                  onPressed: () => launchUrl(
+                    Uri(
+                        scheme: 'https',
+                        host: 'www.facebook.com',
+                        path: '/taggafillan'),
+                  ),
+                  icon: Image.asset('assets/facebook.png'),
+                ),
+                IconButton(
+                  onPressed: () => launchUrl(
+                    Uri(
+                        scheme: 'https',
+                        host: 'www.youtube.com',
+                        path: '/channel/UC7vzorhoujgSlwJcnXWexqA'),
+                  ),
+                  icon: Image.asset('assets/youtube.png'),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
   }
+
+  _onTimerEnd() {
+    setState(() {
+      countdown = true;
+    });
+  }
 }
+
 
 
 /*
@@ -117,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.fromLTRB(70, 100, 70, 0),
                   child: Text(
                     'Du är anmäld',
-                    style: Fil_LanTheme.hdllTextStyle,
+                    style: FilLanTheme.hdllTextStyle,
                   ),
                 )
               : countdown
@@ -129,7 +220,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: const [
                             Text(
                               'Anmäl dig',
-                              style: Fil_LanTheme.hdllTextStyle,
+                              style: FilLanTheme.hdllTextStyle,
                               textAlign: TextAlign.center,
                             ),
                             Icon(Icons.arrow_forward_ios),

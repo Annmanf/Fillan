@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class Fil_LanTheme {
+class FilLanTheme {
   static const bgColor = Color(0xff212021);
   static const orange = Color(0xffFBBB78);
   static const blue = Color(0xff1ca3ae);
@@ -28,14 +28,19 @@ class Fil_LanTheme {
       fontSize: 30, fontWeight: FontWeight.normal, color: lightTextColor);
 
   static const sdTextStyle =
-      TextStyle(fontSize: 16, color: darkTextColor); //for subheaders dark
-  static const slTextStyle =
-      TextStyle(fontSize: 16, color: lightTextColor); //for subheaders light
+      TextStyle(fontSize: 16, color: bgColor); //for subheaders dark
+  static const slTextStyle = TextStyle(fontSize: 16, color: lightTextColor);
+  static const sfTextStyle =
+      TextStyle(fontSize: 16, color: pink); //for subheaders light
 
 // medium button with dark text
   static var butOStyle = ButtonStyle(
     textStyle: MaterialStateProperty.all(sdTextStyle),
     backgroundColor: MaterialStateProperty.all(orange),
+  );
+  static var butDStyle = ButtonStyle(
+    textStyle: MaterialStateProperty.all(TextStyle(color: pink)),
+    backgroundColor: MaterialStateProperty.all(Colors.grey.shade800),
   );
   static var butPStyle = ButtonStyle(
     textStyle: MaterialStateProperty.all(sdTextStyle),
@@ -46,19 +51,18 @@ class Fil_LanTheme {
     backgroundColor: MaterialStateProperty.all(blue),
   );
 
-  static var fil_lanTheme = ThemeData(
-    scaffoldBackgroundColor: Fil_LanTheme.bgColor,
+  static var filLanTheme = ThemeData(
+    scaffoldBackgroundColor: bgColor,
     primarySwatch: createMaterialColor(pink),
     primaryColor: pink,
-    bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: bgColor,
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedLabelStyle: TextStyle(
-          color: pink,
-        )),
-    textButtonTheme: TextButtonThemeData(
+      color: pink,
+    )),
+    textButtonTheme: const TextButtonThemeData(
       style: ButtonStyle(),
     ),
-    colorScheme: ColorScheme(
+    colorScheme: const ColorScheme(
         primary: pink,
         secondary: orange,
         surface: blue,
@@ -71,10 +75,10 @@ class Fil_LanTheme {
         onError: error,
         brightness: Brightness.dark),
     dialogTheme: DialogTheme(
-      backgroundColor: blue,
+      backgroundColor: Colors.grey.shade800,
       titleTextStyle: GoogleFonts.lato(
-        textStyle: TextStyle(
-          color: darkTextColor,
+        textStyle: const TextStyle(
+          color: lightTextColor,
           fontSize: 20,
         ),
       ),

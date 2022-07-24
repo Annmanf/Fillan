@@ -6,33 +6,25 @@ import 'package:fil_lan/screens/start/login_screen.dart';
 import 'package:fil_lan/screens/start/opening_screen.dart';
 import 'package:fil_lan/screens/start/register_screen.dart';
 import 'package:fil_lan/screens/wrapper.dart';
+import 'package:fil_lan/service/seat_service.dart';
 import 'package:fil_lan/theme/fil_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+//import 'package:flutter_native_splash/flutter_native_splash.dart';
+//import 'package:flutter_stripe/flutter_stripe.dart';
 
 import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 import 'service/auth_services.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
-/*void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // set the publishable key for Stripe - this is mandatory
-  Stripe.publishableKey = Stripe.publishableKey;
-  runApp(PaymentScreen());
-   Stripe.publishableKey =
-      "pk_test_51L0nGKGdtQTNvsopeppmEFqiolVdgrUUCdGqK8a89EWLZQNTFfJmTXxb1Kc5D6d2JdHmPNLYrRhA01TISsi7o9Ng004vCzAZzS";
-  await Stripe.instance.applySettings();
-}*/
 
 //void main() => runApp(SwishDemoApp());
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -48,10 +40,9 @@ void main() async {
     // Some web specific code there
   }
   // set the publishable key for Stripe
-  Stripe.publishableKey =
-      'pk_test_51L0nGKGdtQTNvsopeppmEFqiolVdgrUUCdGqK8a89EWLZQNTFfJmTXxb1Kc5D6d2JdHmPNLYrRhA01TISsi7o9Ng004vCzAZzS';
-  await Stripe.instance.applySettings();
-  runApp(MyApp());
+
+  runApp(const MyApp());
+  //FlutterNativeSplash.remove();
 }
 
 class MyApp extends StatelessWidget {
@@ -64,15 +55,14 @@ class MyApp extends StatelessWidget {
         Provider<AuthService>(
           create: (_) => AuthService(),
         ),
-        /*
-        Provider<SeatFire>(
-          create: (_) => SeatFire(),
-        ),*/
+        Provider<SeatService>(
+          create: (_) => SeatService(),
+        ),
         BlocProvider<TableBloc>(create: (context) => TableBloc())
       ],
       child: Builder(builder: (BuildContext context) {
         return MaterialApp(
-          theme: Fil_LanTheme.fil_lanTheme,
+          theme: FilLanTheme.filLanTheme,
           title: "APP",
           initialRoute: '/',
           routes: {
@@ -108,7 +98,7 @@ MaterialColor createMaterialColor(Color color) {
   }
   return MaterialColor(color.value, swatch);
 }
-
+/*
 class PaymentDemo extends StatelessWidget {
   const PaymentDemo({Key? key}) : super(key: key);
   Future<void> initPayment(
@@ -173,4 +163,4 @@ class PaymentDemo extends StatelessWidget {
       )),
     );
   }
-}
+}*/

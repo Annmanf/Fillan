@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fil_lan/models/users.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
@@ -15,6 +17,54 @@ class AuthService {
 
   User? getUsers() {
     return _user;
+  }
+
+  Future<Map<String, dynamic>?> getUserAsMap() async {
+    try {
+      DocumentSnapshot snap = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get()
+          .catchError((error) => print('Could not fetch $error'));
+      if (snap.exists) {
+        Map<String, dynamic> data = snap.data() as Map<String, dynamic>;
+
+        User usr = User.fromJson(data);
+
+        if (usr.uid == _firebaseAuth.currentUser!.uid) {
+          _user = usr;
+        }
+        return data;
+      } else {
+        print('nopoe');
+      }
+    } catch (e) {
+      print('couldnt $e');
+    }
+  }
+
+  User? updateInfo(Map<String, dynamic> data) {
+    try {
+      User usr = User.fromJson(data);
+
+      if (usr.uid == _firebaseAuth.currentUser!.uid) {
+        _user = usr;
+        return _user;
+      } else {
+        print('nopoe');
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getUserInfo() {
+    Stream<DocumentSnapshot<Map<String, dynamic>>> userStream =
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(_user!.uid)
+            .snapshots();
+    return userStream;
   }
 
   User? _userFromFirebase(auth.User? user) {
@@ -119,10 +169,19 @@ class AuthService {
     void Function(auth.FirebaseAuthException e) errorCallback,
   ) async {
     try {
-      final credentials = await _firebaseAuth.createUserWithEmailAndPassword(
+      final credentials = await _firebaseAuth
+          .createUserWithEmailAndPassword(
         email: email,
         password: password,
-      );
+      )
+          .catchError((e) {
+        if (e.code == 'weak-password') {
+          print('The password provided is too weak.');
+        } else if (e.code == 'email-already-in-use') {
+          print('The account already exists for that email.');
+        }
+      });
+
       String uid = credentials.user!.uid;
 
       _firestore.collection('users').doc(uid).set({
@@ -132,7 +191,7 @@ class AuthService {
         'Födelsedatum': birthdate,
         'adress': adress,
         'phonenumber': phonenumber,
-        'password': password,
+        //'password': password,
         'uid': uid
       });
 
@@ -144,34 +203,22 @@ class AuthService {
     }
   }
 
-  Future<void> addUser(
-    String firstname,
-    String lastname,
-    String email,
-    String birthdate,
-    String adress,
-    String phonenumber,
-    String password,
-    String uid,
+  Future<User?> editUser(
+    String field,
+    String newVal,
     void Function(auth.FirebaseAuthException e) errorCallback,
   ) async {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-    bool overeighteen = false;
-    //String uid = _firebaseAuth.currentUser!.uid.toString();
+    try {
+      _firestore.collection('users').doc(uid).update({
+        field: newVal,
+      });
 
-    return users
-        .add({
-          'Förnamn': firstname,
-          'Efternamn': lastname,
-          'email': email,
-          'Födelsedatum': birthdate,
-          'adress': adress,
-          'phonenumber': phonenumber,
-          'password': password,
-          'uid': uid
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+      //addUser(firstname, lastname, email, birthdate, adress, phonenumber,
+      //password, uid, (e) {});
+    } on auth.FirebaseAuthException catch (e) {
+      print("couldn't update field ${e.message} ");
+      errorCallback(e);
+    }
   }
 
   Future<User?> signUpWithContacts(
@@ -247,7 +294,7 @@ class AuthService {
           'contactemail': contactemail,
           'rules': 'regler',
           'kamera': 'kamera',
-          'password': password,
+          //'password': password,
           'uid': uid
         })
         .then((value) => print("User Added"))

@@ -10,7 +10,7 @@ class OpeningScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
     final logo = Image.asset(
-      "assets/milk-box.png",
+      "assets/filangradient.png",
       height: mq.size.height / 4,
     );
     return Scaffold(
@@ -70,7 +70,7 @@ class ButtonTile extends StatelessWidget {
     return Material(
       elevation: 5,
       borderRadius: BorderRadius.circular(25.0),
-      color: buttonColor ?? Fil_LanTheme.orange,
+      color: buttonColor ?? FilLanTheme.orange,
       child: MaterialButton(
         minWidth: mq.size.width / 1.5,
         child: Text(

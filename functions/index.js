@@ -1,6 +1,6 @@
-require('dotenv').config()
 const functions = require("firebase-functions");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+
 
 exports.stripePaymentIntentRequest = functions.https.onRequest(async (req, res) => {
     try {
@@ -34,6 +34,7 @@ exports.stripePaymentIntentRequest = functions.https.onRequest(async (req, res) 
             amount: parseInt(req.body.amount),
             currency: 'sek',
             customer: customerId,
+            automatic_payment_metod: {enabled : true, },
         })
 
         res.status(200).send({
