@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:fil_lan/Swish/swish_home.dart';
 import 'package:fil_lan/logic/table_bloc.dart';
 
 import 'package:fil_lan/screens/start/login_screen.dart';
@@ -43,6 +44,18 @@ void main() async {
 
   runApp(const MyApp());
   //FlutterNativeSplash.remove();
+}
+
+class Swish extends StatelessWidget {
+  const Swish({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: "SwishTesting",
+      home: SwichHome(),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
